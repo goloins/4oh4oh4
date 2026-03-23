@@ -78,6 +78,7 @@ for($index = 1; $index < count($myfeed); $index++) {
 		</span>
 	</td>
 </tr>';
+}
 ?>
 
   
