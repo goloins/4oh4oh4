@@ -60,6 +60,17 @@ function get_user_by_username($username) {
     return $result->fetch_assoc();
 }
 
+function get_user_total_posts_number($user_id) {
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT COUNT(*) as post_count FROM posts WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['post_count'];
+}
+
+
 function is_user_banned($user_id) {
     global $sql_helper;
     $stmt = $sql_helper->prepare("SELECT isbanned FROM users WHERE id = ?");
@@ -116,8 +127,41 @@ function get_userfeed($user_id, $limit = 10) {
     $stmt->execute();
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
+    //this result should look like [ {id: 1, user_id: 1, content: "Hello world", created_at: "2026-01-01 00:00:00", attached_media: null}, {...}, ...]
 }
 
+function format_time_ago($timestamp): string {
+    $time = is_numeric($timestamp) ? (int)$timestamp : strtotime((string)$timestamp);
+
+    if ($time === false || $time <= 0) {
+        return "just now";
+    }
+
+    $diff = time() - $time;
+
+    if ($diff <= 0) {
+        return "just now";
+    }
+
+    $units = [
+        31536000 => "year",
+        2592000  => "month",
+        604800   => "week",
+        86400    => "day",
+        3600     => "hour",
+        60       => "minute",
+        1        => "second",
+    ];
+
+    foreach ($units as $seconds => $label) {
+        if ($diff >= $seconds) {
+            $value = (int) floor($diff / $seconds);
+            return $value . " " . $label . ($value === 1 ? "" : "s") . " ago";
+        }
+    }
+
+    return "just now";
+}
 
 // global feeds: get a chronological list of posts from users in the current users follows list.
 // this is the feed you see when you log in. it should be ordered by created_at desc and paginated. 
@@ -172,6 +216,24 @@ function get_featured_users($limit = 5) {
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
+
+function get_top_followers($user_id){
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT id, username, displayname FROM users WHERE JSON_CONTAINS(follows, JSON_QUOTE(?), '$') ORDER BY created_at DESC LIMIT 5");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $okay = $result->fetch_all(MYSQLI_ASSOC);
+    //should be all we need for the little icons in the box
+    for($index = 0; $index < count($okay); $index++) {
+        $okay[$index]['avatar_url'] = get_user_by_id($okay[$index]['id'])['avatar_url'];
+        $okay[$index]['username'] = get_user_by_id($okay[$index]['id'])['username'];
+        $okay[$index]['displayname'] = get_user_by_id($okay[$index]['id'])['displayname'];
+    }
+    return $okay;
+}
+
 
 function convertmarkdowninfile($filepath) {
     $content = file_get_contents($filepath);
@@ -243,7 +305,7 @@ function drawfooter(){
 		<li><a href="/help">Help</a></li>
 		<li><a href="/tos">Terms of Service</a></li>
 	</ul>
-</div>';
+</div></div>';
 }
 
 
