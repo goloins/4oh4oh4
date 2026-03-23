@@ -1,0 +1,6 @@
+CREATE TABLE `userfeeds` (
+    `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+    `user_id` INT NOT NULL,
+    `post_id` INT NOT NULL,
+    `time_added` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
