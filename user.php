@@ -58,7 +58,7 @@ $myfeed = get_userfeed($user['id'], 10, ($page_id - 1) * 10);
 
   <ul class="tabMenu">
   	<!--li> figure out later lol, maybe we repurpose into a collection of their faves? 
-  	  <a href="https://web.archive.org/web/20070316094528/http://twitter.com/merlinblack/with_friends">With Friends (24h)</a>
+  	  <a href="/goes_somewhere">With Friends (24h)</a>
   	</li-->
   	<li class="active">
   	  <a href="/<?php echo $user['username']; ?>?pageid=<?php echo $page_id - 1; ?>">Previous</a>
@@ -83,7 +83,7 @@ for($index = 1; $index < count($myfeed); $index++) {
         //get original posters name 
         $op_data = get_reposter_info_for_post($post['id']);
         $op_username = $op_data['username'];
-        $content = $site_vars['repost_short_name'] . ' @' . $op_username . ': ' . $post['content'];
+        $content = '<i>'.$site_vars['repost_short_name'] . ' @' . $op_username . '</i>: ' . $post['content'];
     } else {
         $content = $post['content'];
     }   
