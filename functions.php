@@ -100,6 +100,27 @@ function create_post($user_id, $content, $attached_media = null) {
     return $stmt->execute();
 }
 
+function create_reply($user_id, $content, $replying_to_post_id, $attached_media = null) {
+    global $sql_helper;
+    $source = "Web"; //todo: support for source (mobile, IM, etc)
+    $stmt = $sql_helper->prepare("INSERT INTO replies (user_id, content, created_at, attached_media, source, reply_to) VALUES (?, ?, NOW(), ?, ?, ?)");
+    $stmt->bind_param("isssi", $user_id, $content, $attached_media, $source, $replying_to_post_id);
+    return $stmt->execute();
+}
+
+function get_replies_for_post($post_id) {
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT id, user_id, content, created_at, attached_media FROM replies WHERE reply_to = ? ORDER BY created_at ASC");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function ui_get_number_of_replies($post_id){
+    return count(get_replies_for_post($post_id));  
+}
+
 function get_post_by_id($post_id) {
     global $sql_helper;
     $stmt = $sql_helper->prepare("SELECT id, user_id, content, created_at, attached_media FROM posts WHERE id = ?");
