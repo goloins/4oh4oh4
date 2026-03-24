@@ -19,7 +19,17 @@ if (!$user) {
     drawfooter();
     exit();
 }
+
+//okay here we'll handle the $_GET['pageid'] for pagination of user posts. if it aint there, page 1. 
+$page_id = isset($_GET['pageid']) && is_numeric($_GET['pageid']) ? intval($_GET['pageid']) : 1;
+
+
+
+
+
 //here we go
+
+
 
 ?>
 
@@ -31,7 +41,8 @@ if (!$user) {
   
 </h2>
 <?php
-$myfeed = get_userfeed($user['id'], 10);
+
+$myfeed = get_userfeed($user['id'], 10, ($page_id - 1) * 10);
 ?>
 
 <div class="desc">
@@ -84,20 +95,20 @@ for($index = 1; $index < count($myfeed); $index++) {
   
     		    	</table>
     	
-    	<!-- div class="pagination"> TODO: pagination logic here, for now just a placeholder
+    	<div class="pagination"> TODO: pagination logic here, for now just a placeholder
   <ul>
            <li class="disablepage">&#171; previous</li>
 	   
-                           <li class="currentpage">1</li>
+                           <li class="currentpage"><?php echo $page_id; ?></li>
        	      	         	          <li>
-	           <a href="/web/20070316094528/http://twitter.com/merlinblack?page=2">2</a>
+	           <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 1; ?>"><?php echo $page_id + 1; ?></a>
 	          </li>
 	       	      	         	          <li>
-	           <a href="/web/20070316094528/http://twitter.com/merlinblack?page=3">3</a>
+	           <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 2; ?>"><?php echo $page_id + 2; ?></a>
 	          </li>
 	       	      	   
          <li class="nextpage">
-        <a href="/web/20070316094528/http://twitter.com/merlinblack?page=2">next &#187;</a>
+        <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 1; ?>">next &#187;</a>
      </li>
       </ul>
 </div-->
