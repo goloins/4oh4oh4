@@ -43,3 +43,8 @@ $site_vars['about_us_url'] = '/static/aboutus.md'; //same thing for about us pag
 $site_vars['contact_us_url'] = '/static/contact.md'; //you get it, same for contact info
 $site_vars['help_index_url'] = '/static/help_index.md'; //halp pege 
 $site_vars['api_docs_url'] = '/static/api_docs.md'; //api docs, good luck chief
+
+$site_vars['repost_name'] = 'repost'; //what to call reposts, retweets, reskeets, etc.
+$site_vars['fave_name'] = 'fave'; //what to call favorites, likes, loves, hearts, idgaf
+$site_vars['repost_color'] = 'rgb(228, 13, 13)'; //makes the button stand out, maybe red?
+$site_vars['fave_color'] = 'rgb(224, 181, 39)'; //yellow for maximum visibility

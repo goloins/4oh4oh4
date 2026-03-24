@@ -61,7 +61,7 @@ $myfeed = get_userfeed($user['id'], 10, ($page_id - 1) * 10);
   	  <a href="https://web.archive.org/web/20070316094528/http://twitter.com/merlinblack/with_friends">With Friends (24h)</a>
   	</li-->
   	<li class="active">
-  	  <a href="https://web.archive.org/web/20070316094528/http://twitter.com/merlinblack">Previous</a>
+  	  <a href="/<?php echo $user['username']; ?>?pageid=<?php echo $page_id - 1; ?>">Previous</a>
   	</li>
   </ul>
 
@@ -83,7 +83,7 @@ for($index = 1; $index < count($myfeed); $index++) {
 						  <a href="/status/' . $post['id'] . '">' . format_time_ago($post['created_at']) . '</a>
 						from ' . $post['source'] . '
       
-			<span id="status_actions_' . $post['id'] . '">
+			<span id="status_actions_' . $post['id'] . '"> <font color="' . $site_vars['fave_color'] . '"><a href="/fave/' . $post['id'] . '">[' . $site_vars['fave_name'] . ']</a></font> | <font color="' . $site_vars['repost_color'] . '"><a href="/repost/' . $post['id'] . '">[' . $site_vars['repost_name'] . ']</a></font> </span>
 </span>
 
 		</span>
