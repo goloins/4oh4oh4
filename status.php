@@ -24,6 +24,26 @@ if (!$post) {
     echo "<p>" . htmlspecialchars($post['content']) . "</p>";
     echo "<p>Posted " . format_time_ago($post['created_at']) . "</p>";
 }
+// so we need a box to contain the replies, should be a slightly darkened div below the post content.
+?>
+<div id="replies" style="background-color: #f0f0f0; padding: 10px; margin-top: 20px;">
+    <h3>Replies</h3>
+    <?php
+    $replies = get_replies_for_post($post_id);
+    if (count($replies) == 0) {
+        echo "<p>No replies yet.</p>";
+    } else {
+        foreach ($replies as $reply) {
+            echo "<div class='reply' style='border-bottom: 1px solid #ccc; padding: 5px 0;'>";
+            echo "<p><strong>@" . htmlspecialchars(get_user_by_id($reply['user_id'])['username']) . "</strong>: " . htmlspecialchars($reply['content']) . "</p>";
+            echo "<p>Posted " . format_time_ago($reply['created_at']) . "</p>";
+            echo "</div>";
+        }
+    }
+    ?>
+</div>
 
+
+<?php
 
 drawfooter();
