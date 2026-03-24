@@ -449,7 +449,13 @@ function convertmarkdowninfile($filepath) {
 
 
 function generate_uuid_for_upload(){
-    
+    $initial = "";
+    $separator = "-";
+    $listofchars = array("a", "b","c","d","e","f","1","2","3","4","5","6","7","8","9","0");
+    for($c=0;$c<4;$c++){
+        $initial .= $listofchars[array_rand($listofchars)];
+    }
+    return $initial . $separator . $initial . $separator . $initial . $separator . $initial;
 }
 
 
@@ -458,6 +464,30 @@ function generate_uuid_for_upload(){
 //and then give it a unique identifier, name the file that, place it in the /uploads/ folder
 //and then return that url to be stored with the post in the database?
 function handle_image_upload(){
+    $nameit = generate_uuid_for_upload();
+    //do we take the post data directly in the "attachment" parameter?
+    // is it raw data that we can check the mime or header of?
+    // for simplicity, we'll just take the raw data in the "attachment" parameter and check if it's a valid image.
+    if(isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
+        $fileTmpPath = $_FILES['attachment']['tmp_name'];
+        $fileType = mime_content_type($fileTmpPath);
+        $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpegxl'];
+        if(in_array($fileType, $allowedTypes)) {
+            $extension = pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION);
+            $newFileName = $nameit . "." . $extension;
+            $uploadFileDir = __DIR__ . '/uploads/';
+            $dest_path = $uploadFileDir . $newFileName;
+            if(move_uploaded_file($fileTmpPath, $dest_path)) {
+                return '/uploads/' . $newFileName; // return the URL to be stored in the database
+            } else {
+                return null; // failed to move the file for some reason
+            }
+        } else {
+            return null; // invalid file type
+        }
+    } else {
+        return null; // no file uploaded or upload error
+    }
 
 }
 
