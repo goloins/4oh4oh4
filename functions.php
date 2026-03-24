@@ -264,6 +264,56 @@ function get_top_followers($user_id){
     return $okay;
 }
 
+// pull an array of user favorited posts
+function get_user_favorites($user_id){
+    //favorites table is simple, user_id, post_id.
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT user_id, post_id FROM favorites WHERE user_id = ? ORDER BY created_at DESC");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $favorites = $result->fetch_all(MYSQLI_ASSOC);
+    return $favorites;
+}
+
+//just get the number for ui purposes.
+function ui_get_number_favorited($user_id){
+    //the sql should just get the number of rows in the favorites table for that user_id, which is the number of favorited posts.
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT COUNT(*) as fav_count FROM favorites WHERE user_id = ?");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['fav_count'];
+}
+
+function get_favorites_for_post($post_id){
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT user_id FROM favorites WHERE post_id = ? ORDER BY created_at DESC");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $favorites = $result->fetch_all(MYSQLI_ASSOC);
+    return $favorites;
+} //maybe at /faved/id/? i'm delaying the htaccess rewrite magic as long as possible.
+
+function ui_get_num_post_favorites($post_id){
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT COUNT(*) as fav_count FROM favorites WHERE post_id = ?");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['fav_count'];
+} // this will go in the post next to the favorite button.
+
+function ui_get_num_post_reposts($post_id){
+    //essentially the "repost"/"retweet" number.
+    //should check the user posts section for every time a user has reposted
+    //this post. 
+    //stub because this will be a clusterfuck
+}
 
 function convertmarkdowninfile($filepath) {
     $content = file_get_contents($filepath);
@@ -275,6 +325,8 @@ function convertmarkdowninfile($filepath) {
     $content = preg_replace('/\[(.*?)\]\((.*?)\)/', '<a href="$2">$1</a>', $content); // links
     $content = preg_replace('/\n\# (.*?)\n/', '<h1>$1</h1>', $content); // h1
     $content = preg_replace('/\n\#\# (.*?)\n/', '<h2>$1</h2>', $content); // h2
+    //maybe we'll do something else in the future but how much fancy shit are you really gonna do 
+    // in, like, the fuckin ToS page lol. code may be useful in the API docs sections, though hmmm... todo?
     return $content;
 }
 
