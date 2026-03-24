@@ -1,0 +1,42 @@
+RewriteEngine On
+RewriteBase /
+
+# Let real files/directories pass through first
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Core pages
+RewriteRule ^$ home.php [L,QSA]
+RewriteRule ^latest/?$ latest.php [L,QSA]
+RewriteRule ^blog/?$ blog.php [L,QSA]
+RewriteRule ^tos/?$ tos.php [L,QSA]
+
+# Help pages
+RewriteRule ^help/?$ help/index.php [L,QSA]
+RewriteRule ^help/aboutus/?$ help/aboutus.php [L,QSA]
+RewriteRule ^help/contact/?$ help/contact.php [L,QSA]
+RewriteRule ^help/api/?$ help/api.php [L,QSA]
+
+# Status and user pages
+RewriteRule ^status/([0-9]+)/?$ status.php?id=$1 [L,QSA]
+RewriteRule ^user/([A-Za-z0-9_.-]+)/?$ user.php?username=$1 [L,QSA]
+RewriteRule ^faved/([A-Za-z0-9_.-]+)/?$ faved.php?username=$1 [L,QSA]
+
+# Action endpoints used by links
+RewriteRule ^fave/([0-9]+)/?$ do/favorite_post.php?post_id=$1 [L,QSA]
+RewriteRule ^repost/([0-9]+)/?$ do/repost_post.php?post_id=$1 [L,QSA]
+
+# RSS routes like /rss/@name.rss and /rss/#tag.rss
+RewriteRule ^rss/(.+)$ rss.php [L,QSA,NC]
+
+# Optional aliases (uncomment when/if these endpoints exist)
+# RewriteRule ^login/?$ account/login.php [L,QSA]
+# RewriteRule ^register/?$ account/join.php [L,QSA]
+# RewriteRule ^account/create/?$ account/join.php [L,QSA]
+# RewriteRule ^account/resend_password/?$ account/reset_password.php [L,QSA]
+# RewriteRule ^public_timeline/?$ world.php [L,QSA]
+
+# Optional short profile URL: /username -> user.php?username=username
+# Keep this near the end so specific routes above win first.
+#RewriteRule ^([A-Za-z0-9_.-]+)/?$ user.php?username=$1 [L,QSA]
