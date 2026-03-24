@@ -34,13 +34,21 @@ echo "</div>";
 
 
 // get lastest posts from everyone
-
+echo '<table class="doing" id="timeline" cellspacing="0"> <!-- building table -->';
 $world_posts = build_sample_feed(50);
 
-foreach($world_posts as $post){
-  //create rows with post content, user info, etc.
-  //similar to how we do it in home.php
-  //ensure if logged in we draw the fave/repost button.
-  
-
+for($index = 0; $index < count($world_posts); $index++) {
+	$post = $world_posts[$index];
+	$user = get_user_by_id($post['user_id']);
+	echo '<tr class="' . ($index % 2 == 0 ? 'even' : 'odd') . '" id="status_' . htmlspecialchars($post['id']) . '">';
+	echo '<td class="thumb"><a href="/user/' . htmlspecialchars($post['username']) . '"><img alt="' . htmlspecialchars($user['displayname']) . '\'s Avatar" src="' . htmlspecialchars($user['avatar_url']) . '"/></a></td>';
+	echo '<td><strong><a href="/user/' . htmlspecialchars($post['username']) . '" title="User ' . htmlspecialchars($user['displayname']) . '">' . htmlspecialchars($user['displayname']) . '</a></strong>';
+	echo '<p>' . htmlspecialchars($post['content']) . '</p>';
+	echo '<span class="meta"><a href="/status/' . htmlspecialchars($post['id']) . '">' . time_elapsed_string(strtotime($post['created_at'])) . '</a> from web</span>';
+    if(ensure_logged_in()){
+        echo '<span id="status_actions_' . htmlspecialchars($post['id']) . '"><font color="' . $site_vars['fave_color'] . '"><a href="/fave/' . htmlspecialchars($post['id']) . '">[' . htmlspecialchars($site_vars['fave_name']) . ']</a></font> | <font color="' . $site_vars['repost_color'] . '"><a href="/repost/' . htmlspecialchars($post['id']) . '">[' . htmlspecialchars($site_vars['repost_name']) . ']</a></font></span>';
+    }
+    echo '</td></tr>';
 }
+echo '</table>';
+drawfooter();
