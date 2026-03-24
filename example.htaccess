@@ -22,6 +22,7 @@ RewriteRule ^help/api/?$ help/api.php [L,QSA]
 RewriteRule ^status/([0-9]+)/?$ status.php?id=$1 [L,QSA]
 RewriteRule ^user/([A-Za-z0-9_.-]+)/?$ user.php?username=$1 [L,QSA]
 RewriteRule ^faved/([A-Za-z0-9_.-]+)/?$ faved.php?username=$1 [L,QSA]
+RewriteRule ^tag/(A-Za-z0-9_.-]+)/?$ tag.php?tag=$1 [L, QSA]
 
 # Action endpoints used by links
 RewriteRule ^fave/([0-9]+)/?$ do/favorite_post.php?post_id=$1 [L,QSA]
