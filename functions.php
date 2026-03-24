@@ -311,6 +311,29 @@ function get_user_favorites($user_id){
     return $favorites;
 }
 
+function get_all_users_following_this_guy($user_id){
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT id, username, displayname FROM users WHERE JSON_CONTAINS(follows, JSON_QUOTE(?), '$') ORDER BY created_at DESC");
+    $stmt->bind_param("i", $user_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function ui_get_users_following_this_guy($user_id){
+    $followers = get_all_users_following_this_guy($user_id);
+    for($index = 0; $index < count($followers); $index++) {
+        $followers[$index]['avatar_url'] = get_user_by_id($followers[$index]['id'])['avatar_url'];
+        $followers[$index]['username'] = get_user_by_id($followers[$index]['id'])['username'];
+        $followers[$index]['displayname'] = get_user_by_id($followers[$index]['id'])['displayname'];
+    }
+    return $followers;
+}
+
+function ui_num_followers($user_id){
+    return count(get_all_users_following_this_guy($user_id));
+}
+
 //just get the number for ui purposes.
 function ui_get_number_favorited($user_id){
     //the sql should just get the number of rows in the favorites table for that user_id, which is the number of favorited posts.

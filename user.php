@@ -108,7 +108,7 @@ for($index = 1; $index < count($myfeed); $index++) {
   
     		    	</table>
     	
-    	<div class="pagination"> TODO: pagination logic here, for now just a placeholder
+    	<div class="pagination"> 
   <ul>
            <li class="disablepage">&#171; previous</li>
 	   
@@ -151,9 +151,9 @@ for($index = 1; $index < count($myfeed); $index++) {
 			</ul>
 
 <ul>
-	<li><a href="/faved/<?php echo $user['username']; ?>"> <?php echo ui_get_number_favorited($user['id']); ?> Favorites</a></li> <!-- todo: add faving logic -->
+	<li><a href="/faved/<?php echo $user['username']; ?>"> <?php echo ui_get_number_favorited($user['id']); ?> Favorites</a></li> 
 	<li><?php echo count($user['follows']); ?> Following</li>
-	<li>1 Follower</li>  <!-- todo: add loging to enumerate followers, for now just a placeholder -->
+	<li><?php echo ui_num_followers($user['id']); ?> Follower<?php echo ui_num_followers($user['id']) == 1 ? '' : 's'; ?></li>  
 	<li><?php echo get_user_total_posts_number($user['id']); ?> Updates</li>
 </ul>
   <div id="friends">
