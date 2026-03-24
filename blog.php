@@ -13,7 +13,6 @@
 include("functions.php");
 drawheader(false);
 
-//todo: logic yet to be written to read posts from database and display them here, for now just a placeholder  
 echo "<h1>Welcome to the 4oh4oh4 blog!</h1>";
 echo "<p>Here you'll find updates, news, and musings from the 4oh4oh4 team. Stay tuned for more content coming soon!</p>";
 echo '<p>This is a mirror of our @4 account. <a href="/user/4oh4oh4">Follow us! @4oh4oh4</a></p>';
