@@ -130,6 +130,36 @@ function get_userfeed($user_id, $limit = 10, $offset = 0) {
     //this result should look like [ {id: 1, user_id: 1, content: "Hello world", created_at: "2026-01-01 00:00:00", attached_media: null}, {...}, ...]
 }
 
+function get_hashtag_feed($hashtag, $limit = 10, $offset = 0) {
+    global $sql_helper;
+    $like_pattern = '%' . $sql_helper->real_escape_string($hashtag) . '%';
+    $stmt = $sql_helper->prepare("SELECT id, user_id, content, created_at, attached_media FROM posts WHERE content LIKE ? ORDER BY created_at DESC LIMIT ? OFFSET ?");
+    $stmt->bind_param("sii", $like_pattern, $limit, $offset);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
+function generate_rss_feed($items, $title) {
+    $rss_feed = '<?xml version="1.0" encoding="UTF-8" ?>';
+    $rss_feed .= '<rss version="2.0"><channel>';
+    $rss_feed .= '<title>' . htmlspecialchars($title) . '</title>';
+    $rss_feed .= '<link>'.$site_vars['site_url'].'</link>';
+    $rss_feed .= '<description>RSS feed for ' . htmlspecialchars($title) . '</description>';
+
+    foreach ($items as $item) {
+        $rss_feed .= '<item>';
+        $rss_feed .= '<title>' . htmlspecialchars(substr($item['content'], 0, 50)) . '...</title>';
+        $rss_feed .= '<link>'.$site_vars['site_url'].'/status/' . $item['id'] . '</link>';
+        $rss_feed .= '<description>' . htmlspecialchars($item['content']) . '</description>';
+        $rss_feed .= '<pubDate>' . date(DATE_RSS, strtotime($item['created_at'])) . '</pubDate>';
+        $rss_feed .= '</item>';
+    }
+
+    $rss_feed .= '</channel></rss>';
+    return $rss_feed;
+}
+
 function format_time_ago($timestamp): string {
     $time = is_numeric($timestamp) ? (int)$timestamp : strtotime((string)$timestamp);
 
