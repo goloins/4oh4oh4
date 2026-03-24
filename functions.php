@@ -447,6 +447,24 @@ function convertmarkdowninfile($filepath) {
     return $content;
 }
 
+
+function generate_uuid_for_upload(){
+    
+}
+
+
+//okay so some posts will have an image attached. we gotta deal with that.
+//so i guess the flow will take in the raw image data, validate its not malicious
+//and then give it a unique identifier, name the file that, place it in the /uploads/ folder
+//and then return that url to be stored with the post in the database?
+function handle_image_upload(){
+
+}
+
+
+//the sketchbook, where we start drawing up ui dynamic elements or things called often.
+
+
 //so this creates the post/tweet box. it'll take one argument if its a reply which is the post_id
 // that we're replying to. if that's the case, we'll prefill the box with a @mention of the original poster.
 function drawpostbox($reply_to = null){
