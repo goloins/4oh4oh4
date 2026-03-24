@@ -334,6 +334,7 @@ function drawfooter(){
 		<li><a href="/help/api">API</a></li>
 		<li><a href="/help">Help</a></li>
 		<li><a href="/tos">Terms of Service</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
 	</ul>
 </div></div>';
 }

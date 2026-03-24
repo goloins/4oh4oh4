@@ -1,0 +1,1 @@
+*a privacy policy is a good thing these days, but I don't even think the service in this form even collects IPs beyond your apache logs*

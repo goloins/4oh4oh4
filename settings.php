@@ -37,9 +37,9 @@ $site_vars['max_user_post_length'] = 420; //blaze it
 $site_vars['max_admin_post_length'] = 9001; //over 9000!
 $site_vars['max_login_days'] = 30; //30 days
 
-$site_vars['current_tos_url'] = '/tos.md'; //update this when you change your terms of service
-$site_vars['current_privacy_policy_url'] = '/privacy.md'; //privacy policy in md
-$site_vars['about_us_url'] = '/aboutus.md'; //same thing for about us page
-$site_vars['contact_us_url'] = '/contact.md'; //you get it, same for contact info
-$site_vars['help_index_url'] = '/help_index.md'; //halp pege 
-$site_vars['api_docs_url'] = '/api_docs.md'; //api docs, good luck chief
+$site_vars['current_tos_url'] = '/static/tos.md'; //update this when you change your terms of service
+$site_vars['current_privacy_policy_url'] = '/static/privacy.md'; //privacy policy in md
+$site_vars['about_us_url'] = '/static/aboutus.md'; //same thing for about us page
+$site_vars['contact_us_url'] = '/static/contact.md'; //you get it, same for contact info
+$site_vars['help_index_url'] = '/static/help_index.md'; //halp pege 
+$site_vars['api_docs_url'] = '/static/api_docs.md'; //api docs, good luck chief

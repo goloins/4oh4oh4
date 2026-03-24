@@ -1,0 +1,1 @@
+*maybe a FAQ, some simple stuff. it should be self explanitory to your modern web user, but if needed, consult the internet archive*
