@@ -151,7 +151,7 @@ for($index = 1; $index < count($myfeed); $index++) {
 			</ul>
 
 <ul>
-	<li><a href="/faved/<?php echo $user['username']; ?>">0 Favorites</a></li> <!-- todo: add faving logic -->
+	<li><a href="/faved/<?php echo $user['username']; ?>"> <?php echo ui_get_number_favorited($user['id']); ?> Favorites</a></li> <!-- todo: add faving logic -->
 	<li><?php echo count($user['follows']); ?> Following</li>
 	<li>1 Follower</li>  <!-- todo: add loging to enumerate followers, for now just a placeholder -->
 	<li><?php echo get_user_total_posts_number($user['id']); ?> Updates</li>
