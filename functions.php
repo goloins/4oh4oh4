@@ -447,6 +447,23 @@ function convertmarkdowninfile($filepath) {
     return $content;
 }
 
+//so this creates the post/tweet box. it'll take one argument if its a reply which is the post_id
+// that we're replying to. if that's the case, we'll prefill the box with a @mention of the original poster.
+function drawpostbox($reply_to = null){
+    if($reply_to !== null){
+        $original_post = get_post_by_id($reply_to);
+        $original_user = get_user_by_id($original_post['user_id']);
+        $prefill = '@' . htmlspecialchars($original_user['username']) . ' ';
+    } else {
+        $prefill = '';
+    }
+    // form action also depends on $reply_to, duh.
+    echo '<form action="' . ($reply_to !== null ? '/reply/' . htmlspecialchars($reply_to) : '/post') . '" method="post">';
+    echo '<input type="text" name="content" value="' . $prefill . '"/>';
+    echo '<input type="submit" value="Post!"/>';
+    echo '</form>';
+
+}
 
 function drawheader($access){
     echo '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
