@@ -98,7 +98,7 @@ function create_post($user_id, $content, $attached_media = null) {
     if($attached_media){
         $media_array = handle_image_upload($attached_media);
     }
-    $source = "Web"; //todo: support for source (mobile, IM, etc)
+    $source = $site_vars['default_post_source'];
     $stmt = $sql_helper->prepare("INSERT INTO posts (user_id, content, created_at, attached_media, source) VALUES (?, ?, NOW(), ?, ?)");
     $stmt->bind_param("isss", $user_id, $content, json_encode($media_array), $source);
     return $stmt->execute();
@@ -111,7 +111,7 @@ function create_reply($user_id, $content, $replying_to_post_id, $attached_media 
     if($attached_media){
         $media_array = handle_image_upload($attached_media);
     }
-    $source = "Web"; //todo: support for source (mobile, IM, etc)
+    $source = $site_vars['default_post_source'];
     $stmt = $sql_helper->prepare("INSERT INTO replies (user_id, content, created_at, attached_media, source, reply_to) VALUES (?, ?, NOW(), ?, ?, ?)");
     $stmt->bind_param("isssi", $user_id, $content, json_encode($media_array), $source, $replying_to_post_id);
     return $stmt->execute();

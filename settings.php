@@ -51,3 +51,4 @@ $site_vars['fave_name'] = 'fave'; //what to call favorites, likes, loves, hearts
 $site_vars['repost_color'] = 'rgb(228, 13, 13)'; //makes the button stand out, maybe red?
 $site_vars['fave_color'] = 'rgb(224, 181, 39)'; //yellow for maximum visibility
 $site_vars['repost_short_name'] = 'RT'; // yeah we're using 'retweet' here because "RP" makes it all furry-esque. sorry dogs.
+$site_vars['default_post_source'] = 'Web'; //default source for posts, can be overridden by clients
