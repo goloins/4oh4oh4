@@ -130,6 +130,37 @@ function get_post_by_id($post_id) {
     return $result->fetch_assoc();
 }
 
+//build a hashtag cloud here maybe?
+//a method that gets all posts in the last 24 hours
+//pulls out the tags and then ranks them.
+
+function get_trending_hashtags(){
+    global $sql_helper, $site_vars;
+    $timeframe = date('Y-m-d H:i:s', strtotime('-' . $site_vars['trending_timeframe_hours'] . ' hours'));
+    $stmt = $sql_helper->prepare("SELECT content FROM posts WHERE created_at >= ?");
+    $stmt->bind_param("s", $timeframe);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $posts = $result->fetch_all(MYSQLI_ASSOC);
+
+    //now that we got all the posts, time to pop some tags (only got $20 in my pocketttttt)
+    $hashtag_counts = [];
+    foreach ($posts as $post) {
+        preg_match_all('/#(\w+)/', $post['content'], $matches);
+        foreach ($matches[1] as $hashtag) {
+            if (!isset($hashtag_counts[$hashtag])) {
+                $hashtag_counts[$hashtag] = 0;
+            }
+            $hashtag_counts[$hashtag]++;
+        }
+    }
+
+    arsort($hashtag_counts);
+    return array_slice($hashtag_counts, 0, $site_vars['max_tags_in_trending'], true);
+}
+
+
+
 // userfeeds: because users can repost items, each user will have a "feed" associted with their account.
 // this is what you'll see when you look at a users profile. this has nothing to do with the feed you're
 // served based on your follows.

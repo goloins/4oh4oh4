@@ -36,6 +36,8 @@ $site_vars['db_password'] = '';
 $site_vars['max_user_post_length'] = 420; //blaze it
 $site_vars['max_admin_post_length'] = 9001; //over 9000!
 $site_vars['max_login_days'] = 30; //30 days
+$site_vars['max_tags_in_trending'] = 10; //number of tags to show in trending section
+$site_vars['trending_timeframe_hours'] = 24; //how far back to
 
 $site_vars['current_tos_url'] = '/static/tos.md'; //update this when you change your terms of service
 $site_vars['current_privacy_policy_url'] = '/static/privacy.md'; //privacy policy in md
