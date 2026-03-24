@@ -45,7 +45,7 @@ for($index = 0; $index < count($build_public_timeline_preview); $index++) {
 ?>
 </table>
 
-
+<h3>Want to see more of what the world is doing? <a href="/world">Check out the world timeline</a> for the latest posts from everyone!</h3>
 
 		</div></div><hr/>
 
