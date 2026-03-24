@@ -264,6 +264,19 @@ function get_top_followers($user_id){
     return $okay;
 }
 
+function favorite_post($user_id, $post_id) {
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("INSERT INTO favorites (user_id, post_id, created_at) VALUES (?, ?, NOW())");
+    $stmt->bind_param("ii", $user_id, $post_id);
+    return $stmt->execute();
+}
+
+function repost_post($user_id, $post_id) {
+    global $sql_helper;
+    // reposting is essentially just adding the post to the user's feed again with a new timestamp, so it appears as a new post in their profile and followers' feeds.
+    return add_post_to_userfeed($user_id, $post_id);
+}
+
 // pull an array of user favorited posts
 function get_user_favorites($user_id){
     //favorites table is simple, user_id, post_id.
@@ -313,6 +326,13 @@ function ui_get_num_post_reposts($post_id){
     //should check the user posts section for every time a user has reposted
     //this post. 
     //stub because this will be a clusterfuck
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT COUNT(*) as repost_count FROM userfeeds WHERE post_id = ?");
+    $stmt->bind_param("i", $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['repost_count']; //maybe this will work?
 }
 
 function convertmarkdowninfile($filepath) {
