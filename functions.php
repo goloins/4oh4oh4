@@ -94,17 +94,26 @@ function create_user($username, $password, $email, $name) {
 
 function create_post($user_id, $content, $attached_media = null) {
     global $sql_helper;
+    $media_array = array();
+    if($attached_media){
+        $media_array = handle_image_upload($attached_media);
+    }
     $source = "Web"; //todo: support for source (mobile, IM, etc)
     $stmt = $sql_helper->prepare("INSERT INTO posts (user_id, content, created_at, attached_media, source) VALUES (?, ?, NOW(), ?, ?)");
-    $stmt->bind_param("isss", $user_id, $content, $attached_media, $source);
+    $stmt->bind_param("isss", $user_id, $content, json_encode($media_array), $source);
     return $stmt->execute();
 }
 
 function create_reply($user_id, $content, $replying_to_post_id, $attached_media = null) {
     global $sql_helper;
+    $media_array = array();
+
+    if($attached_media){
+        $media_array = handle_image_upload($attached_media);
+    }
     $source = "Web"; //todo: support for source (mobile, IM, etc)
     $stmt = $sql_helper->prepare("INSERT INTO replies (user_id, content, created_at, attached_media, source, reply_to) VALUES (?, ?, NOW(), ?, ?, ?)");
-    $stmt->bind_param("isssi", $user_id, $content, $attached_media, $source, $replying_to_post_id);
+    $stmt->bind_param("isssi", $user_id, $content, json_encode($media_array), $source, $replying_to_post_id);
     return $stmt->execute();
 }
 
@@ -463,17 +472,17 @@ function generate_uuid_for_upload(){
 //so i guess the flow will take in the raw image data, validate its not malicious
 //and then give it a unique identifier, name the file that, place it in the /uploads/ folder
 //and then return that url to be stored with the post in the database?
-function handle_image_upload(){
+function handle_image_upload($attached_media){
     $nameit = generate_uuid_for_upload();
     //do we take the post data directly in the "attachment" parameter?
     // is it raw data that we can check the mime or header of?
     // for simplicity, we'll just take the raw data in the "attachment" parameter and check if it's a valid image.
-    if(isset($_FILES['attachment']) && $_FILES['attachment']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['attachment']['tmp_name'];
+    if($attached_media === UPLOAD_ERR_OK) {
+        $fileTmpPath = $attached_media['tmp_name'];
         $fileType = mime_content_type($fileTmpPath);
         $allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/jpegxl'];
         if(in_array($fileType, $allowedTypes)) {
-            $extension = pathinfo($_FILES['attachment']['name'], PATHINFO_EXTENSION);
+            $extension = pathinfo($attached_media['name'], PATHINFO_EXTENSION);
             $newFileName = $nameit . "." . $extension;
             $uploadFileDir = __DIR__ . '/uploads/';
             $dest_path = $uploadFileDir . $newFileName;
