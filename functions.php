@@ -480,12 +480,15 @@ function handle_image_upload(){
             if(move_uploaded_file($fileTmpPath, $dest_path)) {
                 return '/uploads/' . $newFileName; // return the URL to be stored in the database
             } else {
+                set_notif_banner("There was an error moving the uploaded file. Please try again.");
                 return null; // failed to move the file for some reason
             }
         } else {
+            set_notif_banner("Invalid file type. Please upload a valid image. Supported formats: JPEG, PNG, GIF, WebP, JPEG XL.");
             return null; // invalid file type
         }
     } else {
+        set_notif_banner("No file uploaded or there was an upload error. Please try again.");
         return null; // no file uploaded or upload error
     }
 
@@ -506,8 +509,9 @@ function drawpostbox($reply_to = null){
         $prefill = '';
     }
     // form action also depends on $reply_to, duh.
-    echo '<form action="' . ($reply_to !== null ? '/reply/' . htmlspecialchars($reply_to) : '/post') . '" method="post">';
+    echo '<form action="' . ($reply_to !== null ? '/reply/' . htmlspecialchars($reply_to) : '/post') . '" method="post" enctype="multipart/form-data">';
     echo '<input type="text" name="content" value="' . $prefill . '"/>';
+    echo '<input type="file" name="attachment"/>';
     echo '<input type="submit" value="Post!"/>';
     echo '</form>';
 
