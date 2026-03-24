@@ -227,6 +227,28 @@ function build_user_feed($user_id, $limit = 10, $offset = 0) {
     $result = $stmt->get_result();
     return $result->fetch_all(MYSQLI_ASSOC);
 }
+
+//logic for repost detection. 
+// so userfeeds has the user_id of our current user. but
+// the post_id in that table could be from a different user (i.e. a repost).
+// so we need to pull that posts metadata by post_id and 
+// compare the user_ids. if they dont match, it's a repost and we can display it as such in the UI.
+
+function check_is_repost($userfeed_entry) {
+    $post = get_post_by_id($userfeed_entry['post_id']);
+    return $post['user_id'] != $userfeed_entry['user_id'];
+    //should return true for a repost.
+}
+
+function get_reposter_info_for_post($post_id) {
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT uf.user_id FROM userfeeds uf WHERE uf.post_id = ? AND uf.user_id != (SELECT user_id FROM posts WHERE id = ?)");
+    $stmt->bind_param("ii", $post_id, $post_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    return $result->fetch_all(MYSQLI_ASSOC);
+}
+
 //sample feed for the homepage showing the $number latest posts from everyone.
 //homepage will have 10, /public_timeline will have 50 by default.
 function build_sample_feed($count){

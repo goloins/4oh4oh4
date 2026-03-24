@@ -50,14 +50,14 @@ $myfeed = get_userfeed($user['id'], 10, ($page_id - 1) * 10);
 	  <p class="meta">
   		<a href="/status/<?php echo $myfeed[0]['id']; ?>"><?php echo format_time_ago($myfeed[0]['created_at']); ?></a>
   		from <?php echo $myfeed[0]['source']; ?>
-			<span id="status_actions_<?php echo $myfeed[0]['id']; ?>">
+			<span id="status_actions_<?php echo $myfeed[0]['id']; ?>"><font color="<?php echo $site_vars['fave_color']; ?>"><a href="/fave/<?php echo $myfeed[0]['id']; ?>">[<?php echo $site_vars['fave_name']; ?>]</a></font> | <font color="<?php echo $site_vars['repost_color']; ?>"><a href="/repost/<?php echo $myfeed[0]['id']; ?>">[<?php echo $site_vars['repost_name']; ?>]</a></font>
 </span>
 
   	</p>
 	</div>
 
   <ul class="tabMenu">
-  	<!--li> figure out later lol
+  	<!--li> figure out later lol, maybe we repurpose into a collection of their faves? 
   	  <a href="https://web.archive.org/web/20070316094528/http://twitter.com/merlinblack/with_friends">With Friends (24h)</a>
   	</li-->
   	<li class="active">
@@ -75,8 +75,21 @@ for($index = 1; $index < count($myfeed); $index++) {
     } else {
         $trclass = "odd";
     }
+
+    // okay repost logic here. we'll just check if the post is a repost, and if it is,
+    // we'll prepend the content with the short form of repost in settings.
+    $content = "";
+    if(check_is_repost($post['id'])) {
+        //get original posters name 
+        $op_data = get_reposter_info_for_post($post['id']);
+        $op_username = $op_data['username'];
+        $content = $site_vars['repost_short_name'] . ' @' . $op_username . ': ' . $post['content'];
+    } else {
+        $content = $post['content'];
+    }   
+
       echo     '<tr class="' . $trclass . '" id="status_' . $post['id'] . '">
-        	<td>' . $post['content'] . '</td>
+        	<td>' . $content . '</td>
 			
 				
 		<span class="meta">
