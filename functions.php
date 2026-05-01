@@ -183,7 +183,7 @@ function add_post_to_userfeed($user_id, $post_id) {
 
 function get_userfeed($user_id, $limit = 10, $offset = 0) {
     global $sql_helper;
-    $stmt = $sql_helper->prepare("SELECT p.id, p.user_id, p.content, p.created_at, p.attached_media FROM userfeeds uf JOIN posts p ON uf.post_id = p.id WHERE uf.user_id = ? ORDER BY p.created_at DESC LIMIT ? OFFSET ?");
+    $stmt = $sql_helper->prepare("SELECT p.id, p.user_id, p.content, p.created_at, p.attached_media, p.source FROM userfeeds uf JOIN posts p ON uf.post_id = p.id WHERE uf.user_id = ? ORDER BY p.created_at DESC LIMIT ? OFFSET ?");
     $stmt->bind_param("iii", $user_id, $limit, $offset);
     $stmt->execute();
     $result = $stmt->get_result();

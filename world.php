@@ -9,8 +9,74 @@
 * License: Kopimi (Copy me, Copy my code)
 */
 // world.php - the main feed page, shows the latest posts from everyone.
+session_start();
 include("functions.php");
 drawheader(false);
+
+// trending tag cloud: get_trending_hashtags() returns ['tag' => count] sorted by count desc.
+// shuffle the keys so it reads like a cloud, not a sorted list.
+$trending_hashtags = get_trending_hashtags();
+if (!empty($trending_hashtags)) {
+    $tag_names = array_keys($trending_hashtags);
+    shuffle($tag_names);
+    echo "<div id='trending_tags' style='width:100%; overflow:hidden; margin-bottom:20px; line-height:2;'>";
+    foreach ($tag_names as $tag) {
+        $count     = $trending_hashtags[$tag];
+        $font_size = 10 + ($count * 2);
+        echo '<a href="/tag/' . urlencode($tag) . '" style="font-size:' . (int)$font_size . 'px; margin-right:10px; text-decoration:none; color:#333;">#' . htmlspecialchars($tag) . '</a>';
+    }
+    echo "</div>";
+}
+
+// latest posts from everyone
+echo '<table class="doing" id="timeline" cellspacing="0">';
+$world_posts = build_sample_feed(50);
+
+foreach ($world_posts as $index => $post) {
+    $user      = get_user_by_id($post['user_id']);
+    $avatar    = $user['avatar_url'] ?: 'res/default_avatar.png';
+    $dispname  = $user['displayname'] ?: $user['username'];
+    $trclass   = $index % 2 == 0 ? 'even' : 'odd';
+
+    echo '<tr class="' . $trclass . '" id="status_' . (int)$post['id'] . '">';
+    echo '<td class="thumb"><a href="/user/' . htmlspecialchars($user['username']) . '"><img alt="' . htmlspecialchars($dispname) . '\'s Avatar" src="' . htmlspecialchars($avatar) . '"/></a></td>';
+    echo '<td><strong><a href="/user/' . htmlspecialchars($user['username']) . '">' . htmlspecialchars($dispname) . '</a></strong>';
+    echo '<p>' . htmlspecialchars($post['content']) . '</p>';
+    echo '<span class="meta"><a href="/status/' . (int)$post['id'] . '">' . format_time_ago($post['created_at']) . '</a> from web';
+    if (is_logged_in()) {
+        echo ' <span id="status_actions_' . (int)$post['id'] . '">'
+            . '<font color="' . htmlspecialchars($site_vars['fave_color']) . '"><a href="/fave/' . (int)$post['id'] . '">[' . htmlspecialchars($site_vars['fave_name']) . ']</a></font>'
+            . ' | <font color="' . htmlspecialchars($site_vars['repost_color']) . '"><a href="/repost/' . (int)$post['id'] . '">[' . htmlspecialchars($site_vars['repost_name']) . ']</a></font>'
+            . '</span>';
+    }
+    echo '</span></td></tr>';
+}
+echo '</table>';
+
+        echo '</div></div><hr/>';
+        echo '<div id="side">';
+
+if (is_logged_in()) {
+    $me = get_user_by_id($_SESSION['user_id']);
+    echo '<div class="msg"><h3><a href="/user/' . htmlspecialchars($me['username']) . '">@' . htmlspecialchars($me['username']) . '</a></h3></div>';
+    echo '<div class="actions"><a href="/latest">My timeline</a><br/><a href="/user/' . htmlspecialchars($me['username']) . '">My profile</a></div>';
+} else {
+    echo '<div class="msg"><h3>Join the conversation!</h3></div>';
+    echo '<div class="notify"><a href="/register" class="join">Join for Free!</a><br/>Have an account? <a href="/login">Sign in!</a></div>';
+}
+
+$featured = get_featured_users(5);
+if (!empty($featured)) {
+    echo '<div class="featured"><strong>New members</strong><br/>';
+    foreach ($featured as $fu) {
+        echo '<a href="/user/' . htmlspecialchars($fu['username']) . '">@' . htmlspecialchars($fu['username']) . '</a><br/>';
+    }
+    echo '</div>';
+}
+
+echo '</div>';
+
+drawfooter();
 
 //okay so we have the tags 
 // in get_trending_hashtags. 
