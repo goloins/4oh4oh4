@@ -276,7 +276,7 @@ function build_user_feed($user_id, $limit = 10, $offset = 0) {
     $placeholders = implode(',', array_fill(0, count($follows), '?'));
     $types = str_repeat('i', count($follows));
     
-    $query = "SELECT p.id, p.user_id, p.content, p.created_at, p.attached_media FROM userfeeds uf JOIN posts p ON uf.post_id = p.id WHERE uf.user_id IN ($placeholders) ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
+    $query = "SELECT p.id, p.user_id, p.content, p.created_at, p.attached_media, uf.user_id AS feed_user_id FROM userfeeds uf JOIN posts p ON uf.post_id = p.id WHERE uf.user_id IN ($placeholders) ORDER BY p.created_at DESC LIMIT ? OFFSET ?";
     
     $stmt = $sql_helper->prepare($query);
     
