@@ -32,7 +32,7 @@ RewriteRule ^repost/([0-9]+)/?$ do/repost_post.php?post_id=$1 [L,QSA]
 RewriteRule ^follow/([A-Za-z0-9_.-]+)/?$ do/follow_user.php?username=$1 [L,QSA]
 RewriteRule ^unfollow/([A-Za-z0-9_.-]+)/?$ do/unfollow_user.php?username=$1 [L,QSA]
 
-# RSS routes like /rss/@name.rss and /rss/#tag.rss
+# RSS feeds: /rss/@username.rss, /rss/tag/tagname.rss, /rss/world.rss, /rss/blog.rss
 RewriteRule ^rss/(.+)$ rss.php [L,QSA,NC]
 
 # Optional aliases (uncomment when/if these endpoints exist)

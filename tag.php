@@ -82,7 +82,7 @@ drawheader(false);
             <h3>#<?php echo htmlspecialchars($tag); ?></h3>
         </div>
         <div class="notify">
-            <a href="/rss/#<?php echo urlencode($tag); ?>.rss">RSS Feed</a>
+            <a href="/rss/tag/<?php echo urlencode($tag); ?>.rss">RSS Feed</a>
         </div>
         <?php if (!is_logged_in()): ?>
         <div class="notify">

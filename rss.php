@@ -9,52 +9,66 @@
 * License: Kopimi (Copy me, Copy my code)
 */
 
-// rss.php - RSS feed for user posts, or hashtags
+// rss.php - RSS feed dispatcher
+// Supported URLs:
+//   /rss/@username.rss        — a user's posts
+//   /rss/tag/tagname.rss      — posts tagged with #tagname
+//   /rss/world.rss            — public timeline (latest posts from everyone)
+//   /rss/blog.rss             — site blog (posts by @4)
 include("functions.php");
 
-//determine if this is a user feed or a hashtag feed based on the URL structure
-//if its /rss/@username, or /rss/#hashtag then we know what to do, otherwise show an error message
+function rss_strip_ext(string $s): string {
+    return preg_replace('/\.rss$/i', '', $s);
+}
 
-$path = trim($_SERVER['REQUEST_URI'], '/');
+$path       = trim(parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH), '/');
 $path_parts = explode('/', $path);
+// $path_parts[0] = 'rss'
+// $path_parts[1] = '@user.rss' | 'world.rss' | 'blog.rss' | 'tag'
+// $path_parts[2] = 'tagname.rss'  (only for tag feeds)
 
-if (count($path_parts) < 2) {
+if (count($path_parts) < 2 || $path_parts[0] !== 'rss') {
+    http_response_code(400);
     die("Invalid RSS feed URL.");
 }
 
-$workingwith = "";
+header("Content-Type: application/rss+xml; charset=UTF-8");
 
-$feed_type = $path_parts[1][0];
-$feed_identifier = substr($path_parts[1], 1);
+$segment    = $path_parts[1];
+$first_char = $segment[0] ?? '';
 
-if ($feed_type === '@') {
-    // User feed
-    $user = get_user_by_username($feed_identifier);
-    $workingwith = "User";
-    if (!$user) {
-        die("User not found.");
+if ($first_char === '@') {
+    // /rss/@username.rss
+    $username = rss_strip_ext(substr($segment, 1));
+    if (!preg_match('/^[A-Za-z0-9_]{1,20}$/', $username)) {
+        http_response_code(400); die("Invalid username.");
     }
-    $feed_items = get_userfeed($user['id'], 10, 0);
-} elseif ($feed_type === '#') {
-    // Hashtag feed
-    $workingwith = "Hashtag";
-    $feed_items = get_hashtag_feed($feed_identifier, 10, 0);
+    $user = get_user_by_username($username);
+    if (!$user) { http_response_code(404); die("User not found."); }
+    $items = get_userfeed($user['id'], 20, 0);
+    echo generate_rss_feed($items, "Posts by @" . $username);
+
+} elseif ($segment === 'tag' && isset($path_parts[2])) {
+    // /rss/tag/tagname.rss
+    $tag = rss_strip_ext($path_parts[2]);
+    $tag = preg_replace('/[^A-Za-z0-9_\-]/', '', $tag);
+    if ($tag === '') { http_response_code(400); die("Invalid tag."); }
+    $items = get_hashtag_feed($tag, 20, 0);
+    echo generate_rss_feed($items, "Posts tagged #" . $tag);
+
+} elseif (rss_strip_ext($segment) === 'world') {
+    // /rss/world.rss
+    $items = build_sample_feed(20);
+    echo generate_rss_feed($items, "Public Timeline");
+
+} elseif (rss_strip_ext($segment) === 'blog') {
+    // /rss/blog.rss
+    $blog_user = get_user_by_username("4");
+    if (!$blog_user) { http_response_code(404); die("Blog not available."); }
+    $items = get_userfeed($blog_user['id'], 20, 0);
+    echo generate_rss_feed($items, "Site Blog");
+
 } else {
-    die("Invalid RSS feed type.");
-}
-
-
-//todo: add rss generation function in functions.php.
-
-switch ($workingwith) {
-    case "User":
-        header("Content-Type: application/rss+xml; charset=UTF-8");
-        echo generate_rss_feed($feed_items, "Posts by user @" . $feed_identifier);
-        break;
-    case "Hashtag":
-        header("Content-Type: application/rss+xml; charset=UTF-8");
-        echo generate_rss_feed($feed_items, "Posts with hashtag #" . $feed_identifier);
-        break;
-    default:
-        die("Unknown feed type.");
+    http_response_code(400);
+    die("Unknown feed type. Try /rss/@username.rss, /rss/tag/tagname.rss, /rss/world.rss, or /rss/blog.rss");
 }

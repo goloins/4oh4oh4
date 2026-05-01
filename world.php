@@ -74,6 +74,7 @@ if (!empty($featured)) {
     echo '</div>';
 }
 
+echo '<span class="statuses_options"><a href="/rss/world.rss">RSS Feed</a></span>';
 echo '</div>';
 
 drawfooter();
