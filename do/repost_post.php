@@ -17,7 +17,8 @@
 // and that's basically the /do/ framework in a nutshell. 
 // see also my ezbbs project.
 
-include("functions.php");
+session_start();
+include("../functions.php");
 ensure_logged_in();
 $me = $_SESSION['user_id'];
 $post_id = $_GET['post_id'];

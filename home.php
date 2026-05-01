@@ -12,6 +12,11 @@
 // home.php - main page showing public timeline and login form
 session_start();
 include("functions.php");
+
+if (is_logged_in()) {
+    redirect("/latest");
+}
+
 drawheader(true);
 ?>
 
@@ -66,7 +71,7 @@ for($index = 0; $index < count($build_public_timeline_preview); $index++) {
     		<input id="password" name="password" type="password"/>
     	</div>
     	<input id="remember_me" name="remember_me" type="checkbox" value="1"/> <label for="remember_me">Remember me</label>
-    	<small><a href="/account/resend_password">Forgot?</a></small>
+    <small><a href="/account/reset_password">Forgot?</a></small>
     	<input id="submit" name="commit" type="submit" value="Sign In!"/>
     </fieldset>
   </form>  <script type="text/javascript">

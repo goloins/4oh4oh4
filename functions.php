@@ -93,7 +93,7 @@ function create_user($username, $password, $email, $name) {
 //posts structure: id, user_id, content, created_at, attached_media
 
 function create_post($user_id, $content, $attached_media = null) {
-    global $sql_helper;
+    global $sql_helper, $site_vars;
     $media_array = array();
     if($attached_media){
         $media_array = handle_image_upload($attached_media);
@@ -105,7 +105,7 @@ function create_post($user_id, $content, $attached_media = null) {
 }
 
 function create_reply($user_id, $content, $replying_to_post_id, $attached_media = null) {
-    global $sql_helper;
+    global $sql_helper, $site_vars;
     $media_array = array();
 
     if($attached_media){
@@ -202,6 +202,7 @@ function get_hashtag_feed($hashtag, $limit = 10, $offset = 0) {
 }
 
 function generate_rss_feed($items, $title) {
+    global $site_vars;
     $rss_feed = '<?xml version="1.0" encoding="UTF-8" ?>';
     $rss_feed .= '<rss version="2.0"><channel>';
     $rss_feed .= '<title>' . htmlspecialchars($title) . '</title>';
@@ -601,7 +602,7 @@ if they try to access a page that requires login and they're not logged in, we'l
 function ensure_logged_in() {
     if (!is_logged_in()) {
         set_notif_banner("You must be logged in to view that page.");
-        redirect("home.php");
+        redirect("/");
     }
 }
 
@@ -613,7 +614,7 @@ function set_notif_banner($message){
 function get_notif_banner() {
     if (isset($_COOKIE['notif_banner'])) {
         $message = $_COOKIE['notif_banner'];
-        set_notif_banner("", time() - 3600); // clear the cookie
+        setcookie("notif_banner", "", time() - 3600, "/"); // clear the cookie
         return $message;
     }
     return null;

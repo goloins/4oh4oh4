@@ -10,6 +10,7 @@
 */
 
 // blog.php - main blog page, displays recent posts from @4oh4oh4
+session_start();
 include("functions.php");
 drawheader(false);
 
@@ -22,6 +23,11 @@ echo '<p>...yes we do have a higher post length here on the blog. shhh ;)</p>';
 //so the plan is:
 // fetch the most recent 20 blog posts, which are just posts by the @4 account.
 $whoshouse = get_user_by_username("4");
+if (!$whoshouse) {
+    echo "<p>No blog posts yet.</p>";
+    drawfooter();
+    exit();
+}
 $runshouse = $whoshouse['id'];
 $blog_posts = get_userfeed($runshouse, 20, 0);
 
@@ -30,11 +36,10 @@ $blog_posts = get_userfeed($runshouse, 20, 0);
 // just be that big box again. remember, this is a blog page, not a user profile page.
 foreach ($blog_posts as $post) {
 echo '<div class="desc">';
-echo '<p>' . $post['content'] . '</p>';
+echo '<p>' . htmlspecialchars($post['content']) . '</p>';
 echo '<p class="meta">';
-echo '<a href="/status/' . $post['id'] . '">' . format_time_ago($post['created_at']) . '</a>';
-echo ' from ' . $post['source'];
-echo '<span id="status_actions_' . $post['id'] . '"></span>';
+echo '<a href="/status/' . (int)$post['id'] . '">' . format_time_ago($post['created_at']) . '</a>';
+echo ' from ' . htmlspecialchars($post['source'] ?? 'web');
 echo '</p>';
 echo '</div>';
 }

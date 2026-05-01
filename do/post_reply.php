@@ -14,7 +14,8 @@
 //this does all the processing work for posting a status update.
 
 
-include("functions.php");
+session_start();
+include("../functions.php");
 ensure_logged_in();
 $me = $_SESSION['user_id'];
 $replying_to = $_GET['replying_to'];
