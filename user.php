@@ -155,176 +155,18 @@ drawheader(true);
 			<a href="/register" class="join">Join for Free!</a><br/>
 			Have an account? <a href="/login">Sign in!</a>
 		</div>
+		<?php elseif ((int)$_SESSION['user_id'] !== (int)$user['id']):
+			$viewer_follows = is_following($_SESSION['user_id'], $user['id']); ?>
+		<div class="actions">
+			<?php if ($viewer_follows): ?>
+			<a href="/unfollow/<?php echo htmlspecialchars($user['username']); ?>">Unfollow</a>
+			<?php else: ?>
+			<a href="/follow/<?php echo htmlspecialchars($user['username']); ?>" style="font-weight:bold;">Follow <?php echo htmlspecialchars($user['displayname'] ?: $user['username']); ?>!</a>
+			<?php endif; ?>
+		</div>
 		<?php endif; ?>
 
 	</div>
 
 <?php drawfooter(); ?>
 
-
-
-
-
-//here we go
-
-
-
-?>
-
-
-<h2 class="thumb">
-			<a href="/<?php echo $user['avatar_url']; ?>"><img alt="<?php echo $user['displayname']; ?>" border="0" src="<?php echo $user['avatar_url']; ?>" valign="middle"/></a>
-		
-	<?php echo $user['displayname']; ?>
-  
-</h2>
-<?php
-
-$myfeed = get_userfeed($user['id'], 10, ($page_id - 1) * 10);
-?>
-
-<div class="desc">
-		  <p><?php echo $myfeed[0]['content']; ?></p>
-	  <p class="meta">
-  		<a href="/status/<?php echo $myfeed[0]['id']; ?>"><?php echo format_time_ago($myfeed[0]['created_at']); ?></a>
-  		from <?php echo $myfeed[0]['source']; ?>
-			<span id="status_actions_<?php echo $myfeed[0]['id']; ?>"><font color="<?php echo $site_vars['fave_color']; ?>"><a href="/fave/<?php echo $myfeed[0]['id']; ?>">[<?php echo $site_vars['fave_name']; ?>]</a></font> | <font color="<?php echo $site_vars['repost_color']; ?>"><a href="/repost/<?php echo $myfeed[0]['id']; ?>">[<?php echo $site_vars['repost_name']; ?>]</a></font>
-</span>
-
-  	</p>
-	</div>
-
-  <ul class="tabMenu">
-  	<!--li> figure out later lol, maybe we repurpose into a collection of their faves? 
-  	  <a href="/goes_somewhere">With Friends (24h)</a>
-  	</li-->
-  	<li class="active">
-  	  <a href="/<?php echo $user['username']; ?>?pageid=<?php echo $page_id - 1; ?>">Previous</a>
-  	</li>
-  </ul>
-
-  <div class="tab">
-  	  	  <table class="doing" id="timeline" cellspacing="0">   			
-<?php 
-for($index = 1; $index < count($myfeed); $index++) {
-    $post = $myfeed[$index];
-    if($index % 2 == 0) {
-        $trclass = "even";
-    } else {
-        $trclass = "odd";
-    }
-
-    // okay repost logic here. we'll just check if the post is a repost, and if it is,
-    // we'll prepend the content with the short form of repost in settings.
-    $content = "";
-    if(check_is_repost($post['id'])) {
-        //get original posters name 
-        $op_data = get_reposter_info_for_post($post['id']);
-        $op_username = $op_data['username'];
-        $content = '<i>'.$site_vars['repost_short_name'] . ' @' . $op_username . '</i>: ' . $post['content'];
-    } else {
-        $content = $post['content'];
-    }   
-
-      echo     '<tr class="' . $trclass . '" id="status_' . $post['id'] . '">
-        	<td>' . $content . '</td>
-			
-				
-		<span class="meta">
-						  <a href="/status/' . $post['id'] . '">' . format_time_ago($post['created_at']) . '</a>
-						from ' . $post['source'] . '
-      
-			<span id="status_actions_' . $post['id'] . '"> <font color="' . $site_vars['fave_color'] . '"><a href="/fave/' . $post['id'] . '">[' . $site_vars['fave_name'] . ']</a></font> | <font color="' . $site_vars['repost_color'] . '"><a href="/repost/' . $post['id'] . '">[' . $site_vars['repost_name'] . ']</a></font> </span>
-</span>
-
-		</span>
-	</td>
-</tr>';
-}
-?>
-
-  
-    		    	</table>
-    	
-    	<div class="pagination"> 
-  <ul>
-           <li class="disablepage">&#171; previous</li>
-	   
-                           <li class="currentpage"><?php echo $page_id; ?></li>
-       	      	         	          <li>
-	           <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 1; ?>"><?php echo $page_id + 1; ?></a>
-	          </li>
-	       	      	         	          <li>
-	           <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 2; ?>"><?php echo $page_id + 2; ?></a>
-	          </li>
-	       	      	   
-         <li class="nextpage">
-        <a href="/user/<?php echo $user['username']; ?>?pageid=<?php echo $page_id + 1; ?>">next &#187;</a>
-     </li>
-      </ul>
-</div-->
-
-
- 
-    	       
-    	<span class="statuses_options">
-    		<a href="/rss/@<?php echo $user['username']; ?>.rss">RSS Feed</a>
-      </span>
-  	  </div>
-
-
-		</div></div><hr/>
-
-	
-	<div id="side">
-			
-  
-
-<div class="msg">
-	About <strong><?php echo $user['username']; ?></strong>  
-</div>
-
-<ul class="about">
-	<li>Name: <?php echo $user['displayname']; ?></li>
-			</ul>
-
-<ul>
-	<li><a href="/faved/<?php echo $user['username']; ?>"> <?php echo ui_get_number_favorited($user['id']); ?> Favorites</a></li> 
-	<li><?php echo count($user['follows']); ?> Following</li>
-	<li><?php echo ui_num_followers($user['id']); ?> Follower<?php echo ui_num_followers($user['id']) == 1 ? '' : 's'; ?></li>  
-	<li><?php echo get_user_total_posts_number($user['id']); ?> Updates</li>
-</ul>
-  <div id="friends">
-<?php 
-
-$topfollowers = get_top_followers($user['id'], 5);
-if(count($topfollowers) > 0) {
-    for($index = 0; $index < count($topfollowers); $index++) {
-        $follower = $topfollowers[$index];
-        echo '<a href="/user/' . htmlspecialchars($follower['username']) . '" rel="contact" title="' . htmlspecialchars($follower['displayname']) . '"><img alt="100x100_' . htmlspecialchars($follower['username']) . '" height="24" src="' . htmlspecialchars($follower['avatar_url']) . '" width="24"/></a>';
-    }   
-} else{
-    echo '<p>No followers yet. Be the first to follow ' . htmlspecialchars($user['displayname']) . '!</p>';
-}
-  	
-?>
-  </div>
-
-
-<div class="notify">
-	Want an account?<br/>
-	<a href="/register" class="join">Join for Free!</a><br/>
-	Have an account? <a href="/login">Sign in!</a>
-</div>
-
-
-
-	</div><hr/>
-			
-		
-		<hr/>
-
-
-<?php
-drawfooter();
-?>

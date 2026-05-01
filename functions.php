@@ -361,6 +361,55 @@ function repost_post($user_id, $post_id) {
     return add_post_to_userfeed($user_id, $post_id);
 }
 
+function is_following($follower_id, $target_id) {
+    global $sql_helper;
+    $stmt = $sql_helper->prepare("SELECT follows FROM users WHERE id = ?");
+    $stmt->bind_param("i", $follower_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    if (!$row || !$row['follows']) return false;
+    $follows = json_decode($row['follows'], true) ?? [];
+    return in_array((int)$target_id, $follows);
+}
+
+function follow_user($follower_id, $target_id) {
+    global $sql_helper;
+    if ($follower_id === $target_id) return false; // can't follow yourself
+    if (is_following($follower_id, $target_id)) return true; // already following
+
+    $stmt = $sql_helper->prepare("SELECT follows FROM users WHERE id = ?");
+    $stmt->bind_param("i", $follower_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $follows = json_decode($row['follows'], true) ?? [];
+    $follows[] = (int)$target_id;
+
+    $stmt = $sql_helper->prepare("UPDATE users SET follows = ? WHERE id = ?");
+    $json = json_encode(array_values($follows));
+    $stmt->bind_param("si", $json, $follower_id);
+    return $stmt->execute();
+}
+
+function unfollow_user($follower_id, $target_id) {
+    global $sql_helper;
+    if (!is_following($follower_id, $target_id)) return true; // already not following
+
+    $stmt = $sql_helper->prepare("SELECT follows FROM users WHERE id = ?");
+    $stmt->bind_param("i", $follower_id);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    $follows = json_decode($row['follows'], true) ?? [];
+    $follows = array_values(array_filter($follows, fn($id) => (int)$id !== (int)$target_id));
+
+    $stmt = $sql_helper->prepare("UPDATE users SET follows = ? WHERE id = ?");
+    $json = json_encode($follows);
+    $stmt->bind_param("si", $json, $follower_id);
+    return $stmt->execute();
+}
+
 // pull an array of user favorited posts
 function get_user_favorites($user_id){
     //favorites table is simple, user_id, post_id.
