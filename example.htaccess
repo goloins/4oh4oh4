@@ -33,8 +33,8 @@ RewriteRule ^rss/(.+)$ rss.php [L,QSA,NC]
 
 # Optional aliases (uncomment when/if these endpoints exist)
 RewriteRule ^login/?$ account/login.php [L,QSA]
-# RewriteRule ^register/?$ account/join.php [L,QSA]
-# RewriteRule ^account/create/?$ account/join.php [L,QSA]
+RewriteRule ^register/?$ account/join.php [L,QSA]
+RewriteRule ^account/create/?$ account/join.php [L,QSA]
 # RewriteRule ^account/resend_password/?$ account/reset_password.php [L,QSA]
 # RewriteRule ^public_timeline/?$ world.php [L,QSA]
 
